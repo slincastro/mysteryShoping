@@ -2,7 +2,7 @@ import pandas as pd
 import csv as csv
 
 def csv_writer(data):
-    with open('analisis_inicial.csv', mode='a', newline='', encoding='utf-8') as archivo:
+    with open('./outputs/analisis_inicial.csv', mode='a', newline='', encoding='utf-8') as archivo:
         escritor = csv.writer(archivo)
         escritor.writerow(data)
 
@@ -21,7 +21,7 @@ def analize_column_quality(df, column_name) :
     
     
 
-df = pd.read_csv('IMF_Mystery_Shopping.csv', delimiter=';')
+df = pd.read_csv('./inputs/IMF_Mystery_Shopping.csv', delimiter=';')
 
 columns = ['COD_LOC', 'NOMBRE_LOC', 'CP', 'POBLACION', 'OFICINA', 'PROVINCIA', 'COD_PROY', 'ID_EVALUACION', 'Fecha de ejecucion', 'COD_AUDITOR', 'RESULTADO', 'TITULO_CUESTIONARIO']
 
