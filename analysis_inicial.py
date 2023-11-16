@@ -20,7 +20,6 @@ def analize_column_quality(df, column_name) :
     csv_writer([column_name, estadisticas['count'], num_valores_faltantes, num_valores_unicos,df[column_name].max(),df[column_name].min(), df[column_name].str.len().max(), df[column_name].str.len().min()])
     
     
-
 df = pd.read_csv('./inputs/IMF_Mystery_Shopping.csv', delimiter=';')
 
 columns = ['COD_LOC', 'NOMBRE_LOC', 'CP', 'POBLACION', 'OFICINA', 'PROVINCIA', 'COD_PROY', 'ID_EVALUACION', 'Fecha de ejecucion', 'COD_AUDITOR', 'RESULTADO', 'TITULO_CUESTIONARIO']
