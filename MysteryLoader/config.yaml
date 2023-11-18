@@ -1,0 +1,7 @@
+database:
+  usuario: 'mysteryUser'
+  password: 'pass-mystery'
+  host: 'db'  
+  puerto: '3306'  
+  db: 'mystery_shopping'
+records: 120

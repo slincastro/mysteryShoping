@@ -1,24 +1,29 @@
 import pandas as pd
-from sqlalchemy import create_engine, Table, MetaData
+from sqlalchemy import create_engine, Table, MetaData, select
 import unicodedata
 from faker import Faker
 from datetime import datetime
-from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import NoResultFound
 import traceback
+import yaml
+
 
 fake = Faker('es_ES')
-
+def config():
+    with open('./MysteryLoader/config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+        return config
+    
 def clean_string(input_string):
     return unicodedata.normalize('NFKD', str(input_string)).encode('ascii', 'ignore').decode('ascii')
      
 def get_engine():
-    usuario = 'mysteryUser'
-    password = 'pass-mystery'
-    host = 'db'  
-    puerto = '3306'  
-    db = 'mystery_shopping'
+    usuario = config()['database']['usuario']
+    password = config()['database']['password']
+    host = config()['database']['host']  
+    puerto = config()['database']['puerto']  
+    db = config()['database']['db']
 
     url_conexion = f'mysql+pymysql://{usuario}:{password}@{host}:{puerto}/{db}?charset=utf8mb4'
     return create_engine(url_conexion)
@@ -102,7 +107,7 @@ def generate_file(df):
     error_counter = 0
     with engine.connect() as conn:
         
-        for row in df.head(20).to_dict(orient='records'):
+        for row in df.head(config()['records']).to_dict(orient='records'):
             try:
                 counter = counter + 1
                 trans = conn.begin()
