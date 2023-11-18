@@ -15,6 +15,18 @@ services:
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - db_data:/var/lib/mysql
-
+      
+  mystery_loader:
+    build: .
+    restart: on-failure
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: 'mysteryUser'
+      DATABASE_PASSWORD: 'pass-mystery'
+      DATABASE_NAME: 'mystery_shopping'
+    volumes:
+      - ../:/code
+    depends_on:
+      - db
 volumes:
   db_data:

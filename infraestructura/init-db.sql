@@ -26,7 +26,7 @@ CREATE TABLE Oficina (
 );
 
 CREATE TABLE Auditor (
-    Id_Auditor INT AUTO_INCREMENT PRIMARY KEY,
+    ID INT AUTO_INCREMENT PRIMARY KEY,
     Codigo_Auditor VARCHAR(45),
     Nombre VARCHAR(255),
     Oficina VARCHAR(20),
@@ -41,6 +41,6 @@ CREATE TABLE Evaluacion (
     Codigo_Proyecto VARCHAR(100),
     Auditor INT,
     Id_Local INT,
-    FOREIGN KEY (Auditor) REFERENCES Auditor(Id_Auditor),
+    FOREIGN KEY (Auditor) REFERENCES Auditor(ID),
     FOREIGN KEY (Id_local) REFERENCES Local(ID)
 );
