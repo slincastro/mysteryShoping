@@ -16,7 +16,7 @@ def clean_string(input_string):
 def get_engine():
     usuario = 'mysteryUser'
     password = 'pass-mystery'
-    host = 'localhost'  
+    host = 'db'  
     puerto = '3306'  
     db = 'mystery_shopping'
 
@@ -58,16 +58,20 @@ def get_id(table, criterios_busqueda):
     finally:
         session.close()
             
-def create_if_not_exist(table, row, keys, engine, conn):
+def create_if_not_exist(table, row, keys, engine, conn, params={}):
     metadata = MetaData()
     metadata.bind = engine
     
     fields = {key: row[key] for key in keys}
-    if not is_this_field_exist(table, fields) :
+    
+    if not bool(params):
+        params = fields
+        
+    if not is_this_field_exist(table, params) :
         result = conn.execute(table.insert().values(**fields))
         return result.inserted_primary_key[0]
     
-    return get_id(table, fields)
+    return get_id(table, params)
 
 def generate_file(df):
     
@@ -95,10 +99,11 @@ def generate_file(df):
     metadata = MetaData()
     metadata.bind = engine
     counter = 0
+    error_counter = 0
     with engine.connect() as conn:
         
-        #try:
-            for row in df.head(15).to_dict(orient='records'):
+        for row in df.head(20).to_dict(orient='records'):
+            try:
                 counter = counter + 1
                 trans = conn.begin()
                 
@@ -113,17 +118,18 @@ def generate_file(df):
                 keys = ['Codigo_Local', 'Nombre','Ubicacion_ID']
 
                 generated_local_id = create_if_not_exist(LocalTable, row, keys, engine, conn)
-               
+
+                row['Nombre'] = fake.company()
                 OficinaTable = Table('Oficina', metadata, autoload_with=engine)
-                keys = ['ID']
-                oficina_id = create_if_not_exist(OficinaTable, row, keys, engine, conn)
+                keys = ['ID','Nombre']
+                oficina_id = create_if_not_exist(OficinaTable, row, keys, engine, conn, {'ID': row['ID']})
+                
                 
                 AuditorTable = Table('Auditor', metadata, autoload_with=engine)
-                auditor = {key: row[key] for key in ['Codigo_Auditor']}                 
-                auditor['Nombre'] = fake.name()
-                auditor['Oficina'] = oficina_id
-                result = conn.execute(AuditorTable.insert().values(**auditor))
-                auditor_id = result.inserted_primary_key[0]
+                row['Nombre'] = fake.name()
+                row['Oficina'] = oficina_id
+                keys = ['Codigo_Auditor', 'Nombre', 'Oficina']
+                auditor_id = create_if_not_exist(AuditorTable, row, keys, engine, conn)
                 
                 EvaluacionTable = Table('Evaluacion', metadata, autoload_with=engine)
                 evaluacion = {key: row[key] for key in ['Id_Evaluacion', 'Codigo_Proyecto', 'Fecha', 'Resultado', 'Titulo']} 
@@ -137,13 +143,18 @@ def generate_file(df):
                 result = conn.execute(EvaluacionTable.insert().values(**evaluacion))
                 
                 trans.commit()
-                print(f"insertando registro {counter}")
+                if counter % 10 == 0:
+                    print(f"insertando registro {counter}")
                              
-       # except Exception as e:
-        #    print(e)
-         #   print(e.__traceback__)
-          #  trans.rollback()
+            except Exception as e:
+                print(e)
+                traceback.print_exc()
+                trans.rollback()
+                error_counter = error_counter + 1
+                
+        print(f"Registros Insertados : {counter}")
+        print(f"Registros con error : {error_counter}")
         
-df = pd.read_csv('../inputs/IMF_Mystery_Shopping.csv', delimiter=';')
+df = pd.read_csv('./inputs/IMF_Mystery_Shopping.csv', delimiter=';')
 
 generate_file(df)
