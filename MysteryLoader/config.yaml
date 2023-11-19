@@ -4,4 +4,4 @@ database:
   host: 'db'  
   puerto: '3306'  
   db: 'mystery_shopping'
-records: 32000
+records: 320
