@@ -35,7 +35,7 @@ CREATE TABLE Auditor (
 
 CREATE TABLE Evaluacion (
     Id_Evaluacion INT PRIMARY KEY,
-    Resultado VARCHAR(255),
+    Resultado FLOAT,
     Titulo VARCHAR(255),
     Fecha DATE,
     Codigo_Proyecto VARCHAR(100),

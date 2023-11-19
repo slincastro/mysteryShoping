@@ -99,6 +99,7 @@ def generate_file(df):
     df['Poblacion'] = df['Poblacion'].apply(clean_string)
     df['Nombre'] = df['Nombre'].apply(clean_string)
     df['Titulo'] = df['Titulo'].apply(clean_string)
+    df['Resultado'] = df['Resultado'].str.replace(',', '.').astype(float)
     
     engine = get_engine()
     metadata = MetaData()
@@ -127,14 +128,14 @@ def generate_file(df):
                 row['Nombre'] = fake.company()
                 OficinaTable = Table('Oficina', metadata, autoload_with=engine)
                 keys = ['ID','Nombre']
-                oficina_id = create_if_not_exist(OficinaTable, row, keys, engine, conn, {'ID': row['ID']})
+                oficina_id = create_if_not_exist(OficinaTable, row, keys, engine, conn, {'ID': row['ID']} )
                 
                 
                 AuditorTable = Table('Auditor', metadata, autoload_with=engine)
                 row['Nombre'] = fake.name()
                 row['Oficina'] = oficina_id
                 keys = ['Codigo_Auditor', 'Nombre', 'Oficina']
-                auditor_id = create_if_not_exist(AuditorTable, row, keys, engine, conn)
+                auditor_id = create_if_not_exist(AuditorTable, row, keys, engine, conn,{'Codigo_Auditor': row['Codigo_Auditor']} )
                 
                 EvaluacionTable = Table('Evaluacion', metadata, autoload_with=engine)
                 evaluacion = {key: row[key] for key in ['Id_Evaluacion', 'Codigo_Proyecto', 'Fecha', 'Resultado', 'Titulo']} 
