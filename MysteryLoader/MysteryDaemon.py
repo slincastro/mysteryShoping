@@ -10,6 +10,7 @@ import yaml
 
 
 fake = Faker('es_ES')
+
 def config():
     with open('./MysteryLoader/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
